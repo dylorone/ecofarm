@@ -13,7 +13,7 @@
 
 void CM_Init(){
   watch.begin();
-  //watch.settime(0, 0, 15, 12, 2, 21, 5);
+  //watch.settime(0, 30, 21, 24, 4, 21, 6);
   
   dht_sensor.begin();
   
@@ -36,32 +36,17 @@ void CM_Loop(){
   digitalWrite(SEN_ENABLE_PIN, HIGH);
   dirtHumidity = analogRead(DIRT_HUMIDITY_PIN)/4;
   digitalWrite(SEN_ENABLE_PIN, LOW);
-
-  //if(effectsEnabled) CM_Update_Leds();
-
-  /*digitalWrite(SEN_ENABLE_PIN, HIGH);
-  dirtHumidity = String(analogRead(DIRT_HUMIDITY_PIN)/4);
-  Serial.print("ALARM = ");
-  Serial.print(analogRead(WLALARM_PIN));
-  Serial.print(" | MAX = ");
-  Serial.print(analogRead(WLMAX_PIN));
-  Serial.print(" | VARIABLE = ");
-  Serial.println(analogRead(VARIABLE_PIN));
-  digitalWrite(SEN_ENABLE_PIN, LOW);*/
 }
 
 void CM_Update_Leds(int tid){
   if(!effectsEnabled) return;
-  
+
   rtos_tasks[tid].exec_time = currentLedEffect.exec(leds, currentLedEffect.occs_away);
   if(currentLedEffect.occs_away == currentLedEffect.exec_times) currentLedEffect.dec = true;
   else if(currentLedEffect.occs_away == 0) currentLedEffect.dec = false;
     
   if(currentLedEffect.dec == false) currentLedEffect.occs_away++;
   else if(currentLedEffect.dec == true) currentLedEffect.occs_away--;
-
-  fogEnabled = false;
-  pumpEnabled = false;
 }
 
 void CM_Show_LedEffect(unsigned int (*exec)(CRGB* leds, unsigned char occ), unsigned char occs_amount){
@@ -73,7 +58,7 @@ void CM_Fog(int tid){
   
   digitalWrite(FOG_PIN, HIGH);
   if(!fogState) rtos_tasks[tid].exec_time = random(3, 11)*1000;
-  else rtos_tasks[tid].exec_time = random(1, 6)*1000;
+  else rtos_tasks[tid].exec_time = random(2, 8)*1000;
   
   digitalWrite(FAN_PIN, fogState);
   fogState = !fogState;
@@ -83,13 +68,15 @@ void CM_Pump(int tid){
   if(!pumpEnabled) return;
   if(dirtHumidity <= DIRT_HUMIDITY){
     digitalWrite(PUMP_PIN, LOW);
+    //Serial.println("PUMP DISABLED");
     return;
   }
-  
+
+  //Serial.println("PUMP ENABLED");
   digitalWrite(PUMP_PIN, pumpState);
 
   if(!pumpState) rtos_tasks[tid].exec_time = 10000;
-  else rtos_tasks[tid].exec_time = 800;
+  else rtos_tasks[tid].exec_time = 1000;
   
   pumpState = !pumpState;
 }
@@ -101,6 +88,13 @@ void CM_Toggle_LedEffects(){
 void CM_Toggle_FogAndPump(){
   pumpEnabled = !pumpEnabled;
   fogEnabled = !fogEnabled;
+
+  if(!fogEnabled){
+    digitalWrite(FAN_PIN, LOW);
+    digitalWrite(FOG_PIN, LOW);
+  } 
+
+  if(!pumpEnabled) digitalWrite(PUMP_PIN, LOW);
 }
 
 String CM_Get_Time(){

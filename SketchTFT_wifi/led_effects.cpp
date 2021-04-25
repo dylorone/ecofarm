@@ -20,12 +20,20 @@ unsigned int LE_Snakes(CRGB* leds, unsigned char occ){
   leds[22-occ] = CHSV(255/(NUM_LEDS/4)*occ, 255, 200);
   leds[23+occ] = CHSV(255/(NUM_LEDS/4)*occ, 255, 200);
   FastLED.show();
+  return 100;
 }
 
 unsigned int LE_Gradient(CRGB* leds, unsigned char occ){
-  if(occ == 0 && CurrentGradColor2 < 4){
+  if(occ == 0 && CurrentGradColor2 < 5){
     CurrentGradColor2++;
-      if(CurrentGradColor2 == 4) CM_Toggle_FogAndPump();
+      if(CurrentGradColor2 == 4){
+        CM_Toggle_FogAndPump();
+      } 
+      else if(CurrentGradColor2 == 5){
+        CurrentGradColor2 = 0;
+        CM_Show_LedEffect(LE_Snakes, NUM_LEDS/4);
+        return 1000;
+      }
   }
   
   float rDiff = getDiff(GradColor1.red, colors[CurrentGradColor2-1].red);
@@ -71,6 +79,5 @@ unsigned int LE_SnakeGradient(CRGB* leds, unsigned char occ){
 }
 
 float getDiff(uint8_t a, uint8_t b){
-  return b - a;
-  
+  return b - a;  
 }

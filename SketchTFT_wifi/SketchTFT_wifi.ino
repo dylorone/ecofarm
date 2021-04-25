@@ -50,7 +50,7 @@ void registerAllTasks(){
   registerTask(FOG_DEMO, 1000, CM_Fog);
   registerTask(LED_EFFECTS, 5000, CM_Update_Leds);
   registerTask(PUMP_DEMO, 1000, CM_Pump);
-  registerTask(WIFI_MGT, 500, WIFI_Loop);
+  //registerTask(WIFI_MGT, 500, WIFI_Loop);
 }
 
 void setup() {
@@ -73,7 +73,7 @@ void setup() {
   
   CM_Init();
   GM_Init(screen);
-  WIFI_Init();
+  //WIFI_Init();
 
   GM_Register_Menu(WAITING_MENU_1, WM_Show, WM_Update, WM_Handle_Event);
   GM_Register_Menu(WAITING_MENU_2, WM1_Show, WM1_Update, WM1_Handle_Event);
@@ -84,8 +84,8 @@ void setup() {
   GM_Show_Menu(screen, WAITING_MENU_1);
   
   CM_Show_LedEffect(LE_Gradient, 250);
-  //CM_Toggle_LedEffects();
-
+  CM_Toggle_LedEffects();
+  
   randomSeed(analogRead(0));
 }
 

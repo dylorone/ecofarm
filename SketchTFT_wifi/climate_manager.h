@@ -7,9 +7,9 @@
 
 #include "pins.h"
 
-#define NUM_LEDS 46
 
-#define DIRT_HUMIDITY 50
+#define NUM_LEDS 46
+#define DIRT_HUMIDITY 70
 
 /*
   WL_ALARM = WLALARM_PIN,
@@ -19,7 +19,7 @@
  */
 
 typedef struct LedEffect {
-  boolean dec;
+  bool dec;
   unsigned char exec_times;
   unsigned char occs_away;
   unsigned int (*exec)(CRGB* leds, unsigned char occ);
